@@ -1,0 +1,37 @@
+#!/bin/sh
+
+#### PARAMS ####
+LXR_PATH=/var/www/html/lxrng
+LOCK_FILE=update.lock
+LXR_PRJS=`ls $LXR_PATH/text-db`
+
+#### update lxrng ####
+cd $LXR_PATH
+
+# check backup script running.
+if [ -e *.lock ]
+then
+	echo "lxr update: NG"
+	echo "	lxr backup script is running."
+	exit 1
+else
+	touch $LOCK_FILE
+fi
+
+#./lxr-updateall
+for i in $LXR_PRJS
+do
+	echo "Update $i..."
+	$LXR_PATH/lxr-genxref $i
+	echo "done"
+done
+
+
+if [ $? -eq 0 ]
+then
+	echo "lxr update: OK"
+else
+	echo "lxr update: NG"
+fi
+
+rm $LOCK_FILE

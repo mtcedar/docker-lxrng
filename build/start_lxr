@@ -1,0 +1,28 @@
+#!/bin/sh
+
+LXR_PATH=/var/www/html/lxrng
+
+init_db() {
+	REPOS=`find ${LXR_PATH}/repo -type d -name *.git`
+	for i in ${REPOS}
+	do
+		NAME=${i%.*}
+		NAME=${NAME##*/}
+		echo "init_db ${NAME}..."
+		sudo -u lxrng ${LXR_PATH}/lxr-db-admin ${NAME} --init
+		sudo -u lxrng ${LXR_PATH}/lxr-genxref ${NAME}
+	done
+}
+
+if [ ! -e ${LXR_PATH}/cache/inited ]; then
+	chmod -R a+w ${LXR_PATH}/cache
+	chown -R lxrng.lxrng ${LXR_PATH}/text-db
+	chown -R lxrng.lxrng ${LXR_PATH}/repo
+	touch ${LXR_PATH}/cache/inited
+	# wait for DB
+	sleep 8 
+	init_db
+fi
+
+/usr/sbin/apachectl -D FOREGROUND
+

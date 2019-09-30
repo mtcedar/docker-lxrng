@@ -1,0 +1,12 @@
+#!/bin/sh
+
+GIT_PATH=/var/www/html/lxrng/repo
+GIT_REPOS=`find $GIT_PATH -type d -name *.git`
+
+for i in $GIT_REPOS
+do
+    echo "update $i..."
+    cd $i; \
+    git remote update;
+    echo "done!"
+done

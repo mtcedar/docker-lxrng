@@ -1,0 +1,27 @@
+version: '2'
+services:
+  lxrng:
+    build: ./build
+    image: 'ymmt/lxrng'
+    container_name: 'lxrng'
+    restart: always
+    hostname: 'ymmt-lxrng'
+    tty: true
+    depends_on:
+      - db
+    ports:
+      - '10180:80'
+    volumes:
+      - './text-db:/var/www/html/lxrng/text-db'
+      - './cache:/var/www/html/lxrng/cache'
+      - './repo:/var/www/html/lxrng/repo'
+      - './lxrng.conf:/var/www/html/lxrng/lxrng.conf'
+
+  db:
+    image: 'postgres:9.3'
+    container_name: 'lxrng-db'
+    restart: always
+    volumes:
+      - './db:/var/lib/postgresql/data'
+      - './initdb:/docker-entrypoint-initdb.d'
+
